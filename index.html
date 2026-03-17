@@ -428,20 +428,20 @@
   <div id="toast">Berhasil Disalin!</div>
 
   <script>
-    // DATA
+    // DATA - UBAH 'KAK' MENJADI 'BOS'
     const scriptsData = [
-      { cat: 'info', title: 'Pertanyaan: Apa itu Over/Under?', txt: 'Kak, Over/Under itu tebak jumlah total gol.\n* OVER (O): Total gol LEBIH dari angka patokan.\n* UNDER (U): Total gol KURANG dari angka patokan.\nContoh: O 2.5 berarti minimal harus ada 3 gol dalam pertandingan.' },
-      { cat: 'info', title: 'Pertanyaan: Apa itu Handicap/HDP?', txt: 'Kak, Handicap itu sistem voor (pemberian bola maya).\nTim Favorit (di atas): Memberi voor.\nTim Underdog (di bawah): Menerima voor.\nTujuannya untuk menyamakan kekuatan kedua tim agar odds seimbang.' },
-      { cat: 'win', title: 'Skenario: Member Menang', txt: 'Selamat Kak! Untuk taruhan di match tadi, statusnya sudah **WIN (Menang)**.\nSaldo kemenangan sudah masuk otomatis ke saldo utama. Terima kasih Kak.' },
-      { cat: 'lose', title: 'Skenario: Member Kalah', txt: 'Mohon maaf Kak, untuk taruhan tadi hasilnya **LOSE (Kalah)**.\nPrediksi tidak sesuai dengan hasil pertandingan. Semoga beruntung di match selanjutnya ya Kak.' },
-      { cat: 'draw', title: 'Skenario: Draw (Uang Kembali)', txt: 'Kak, untuk taruhan tadi hasilnya **DRAW**.\nKarena hasil skor pas di batas voor, modal Kakak dikembalikan secara utuh (tanpa potongan dan tanpa untung).' },
-      { cat: 'win', title: 'Skenario: Half Win (Menang Setengah)', txt: 'Kak, taruhan tadi statusnya **HALF WIN (Menang Setengah)**.\nIni terjadi karena hasil skor tepat di batas tertentu (biasanya HDP 0.75).\nKakak mendapatkan setengah dari kemenangan, sisanya dianggap draw.' },
-      { cat: 'lose', title: 'Skenario: Half Lose (Kalah Setengah)', txt: 'Kak, taruhan tadi statusnya **HALF LOSE (Kalah Setengah)**.\nIni terjadi karena hasil skor tepat di batas tertentu (biasanya HDP 0.75).\nSetengah modal hangus, setengahnya lagi dikembalikan ke saldo.' },
-      { cat: 'tech', title: 'Komplain: Odds Berubah Saat Running', txt: 'Kak, untuk taruhan Running (Bola Jalan), odds bergerak secara *real-time* mengikuti jalannya pertandingan.\nKalau odds berubah sebelum confirm, berarti sistem sudah update kondisi terbaru. Jadi kita harus cepat pasang ya Kak.' },
-      { cat: 'tech', title: 'Komplain: Kenapa Bet Saya Reject?', txt: 'Mohon maaf Kak, biasanya taruhan rejected karena:\n1. Odds sudah berubah saat match running.\n2. Market sedang ditutup sementara (suspend).\n3. Limit taruhan sudah penuh.\nSilakan dicoba pasang ulang ya Kak.' },
-      { cat: 'tech', title: 'Komplain: Parlay Kalah 1 Saja', txt: 'Benar Kak, untuk Mix Parlay syarat menangnya adalah **SEMUA TIM HARUS MENANG**.\nKalau ada 1 tim saja yang kalah/draw, maka seluruh taruhan parlay dinyatakan kalah (Lost).' },
-      { cat: 'info', title: 'Pertanyaan: SBO vs SABA', txt: 'Kak perbedaannya:\n* **SBO:** Odds sering minus (indo), potongan kalah bisa lebih besar, tapi max win tinggi.\n* **SABA:** Odds positif desimal, perhitungan lebih simple, cocok pemula.\nTerserah Kakak mau pakai yang mana, saldo bisa dipakai di semua provider.' },
-      { cat: 'cs', title: 'Jawaban: Cek Dulu ke Sistem', txt: 'Baik Kak, mohon tunggu sebentar. Saya cekkan dulu history taruhan dan detail pertandingannya di sistem untuk memastikan hasilnya benar.' }
+      { cat: 'info', title: 'Pertanyaan: Apa itu Over/Under?', txt: 'Bos, Over/Under itu tebak jumlah total gol.\n* OVER (O): Total gol LEBIH dari angka patokan.\n* UNDER (U): Total gol KURANG dari angka patokan.\nContoh: O 2.5 berarti minimal harus ada 3 gol dalam pertandingan.' },
+      { cat: 'info', title: 'Pertanyaan: Apa itu Handicap/HDP?', txt: 'Bos, Handicap itu sistem voor (pemberian bola maya).\nTim Favorit (di atas): Memberi voor.\nTim Underdog (di bawah): Menerima voor.\nTujuannya untuk menyamakan kekuatan kedua tim agar odds seimbang.' },
+      { cat: 'win', title: 'Skenario: Member Menang', txt: 'Selamat Bos! Untuk taruhan di match tadi, statusnya sudah **WIN (Menang)**.\nSaldo kemenangan sudah masuk otomatis ke saldo utama. Terima kasih Bos.' },
+      { cat: 'lose', title: 'Skenario: Member Kalah', txt: 'Mohon maaf Bos, untuk taruhan tadi hasilnya **LOSE (Kalah)**.\nPrediksi tidak sesuai dengan hasil pertandingan. Semoga beruntung di match selanjutnya ya Bos.' },
+      { cat: 'draw', title: 'Skenario: Draw (Uang Kembali)', txt: 'Bos, untuk taruhan tadi hasilnya **DRAW**.\nKarena hasil skor pas di batas voor, modal Bos dikembalikan secara utuh (tanpa potongan dan tanpa untung).' },
+      { cat: 'win', title: 'Skenario: Half Win (Menang Setengah)', txt: 'Bos, taruhan tadi statusnya **HALF WIN (Menang Setengah)**.\nIni terjadi karena hasil skor tepat di batas tertentu (biasanya HDP 0.75).\nBos mendapatkan setengah dari kemenangan, sisanya dianggap draw.' },
+      { cat: 'lose', title: 'Skenario: Half Lose (Kalah Setengah)', txt: 'Bos, taruhan tadi statusnya **HALF LOSE (Kalah Setengah)**.\nIni terjadi karena hasil skor tepat di batas tertentu (biasanya HDP 0.75).\nSetengah modal hangus, setengahnya lagi dikembalikan ke saldo.' },
+      { cat: 'tech', title: 'Komplain: Odds Berubah Saat Running', txt: 'Bos, untuk taruhan Running (Bola Jalan), odds bergerak secara *real-time* mengikuti jalannya pertandingan.\nKalau odds berubah sebelum confirm, berarti sistem sudah update kondisi terbaru. Jadi kita harus cepat pasang ya Bos.' },
+      { cat: 'tech', title: 'Komplain: Kenapa Bet Saya Reject?', txt: 'Mohon maaf Bos, biasanya taruhan rejected karena:\n1. Odds sudah berubah saat match running.\n2. Market sedang ditutup sementara (suspend).\n3. Limit taruhan sudah penuh.\nSilakan dicoba pasang ulang ya Bos.' },
+      { cat: 'tech', title: 'Komplain: Parlay Kalah 1 Saja', txt: 'Benar Bos, untuk Mix Parlay syarat menangnya adalah **SEMUA TIM HARUS MENANG**.\nKalau ada 1 tim saja yang kalah/draw, maka seluruh taruhan parlay dinyatakan kalah (Lost).' },
+      { cat: 'info', title: 'Pertanyaan: SBO vs SABA', txt: 'Bos perbedaannya:\n* **SBO:** Odds sering minus (indo), potongan kalah bisa lebih besar, tapi max win tinggi.\n* **SABA:** Odds positif desimal, perhitungan lebih simple, cocok pemula.\nTerserah Bos mau pakai yang mana, saldo bisa dipakai di semua provider.' },
+      { cat: 'cs', title: 'Jawaban: Cek Dulu ke Sistem', txt: 'Baik Bos, mohon tunggu sebentar. Saya cekkan dulu history taruhan dan detail pertandingannya di sistem untuk memastikan hasilnya benar.' }
     ];
 
     const termsData = [
