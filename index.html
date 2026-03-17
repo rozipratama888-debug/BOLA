@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS Sportsbook Pro Tools</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #050507;
+      --bg-main: #0E1016;
+      --bg-card: #14161E;
+      --bg-input: #1A1D27;
+      --border: #252832;
+      --text-main: #F1F2F6;
+      --text-muted: #8B8FA3;
+      --accent: #00E676;
+      --accent-dim: rgba(0, 230, 118, 0.1);
+      --danger: #FF3D57;
+      --danger-dim: rgba(255, 61, 87, 0.1);
+      --warning: #FFB74D;
+      --info: #2979FF;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background Decoration */
+    .bg-grid {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: radial-gradient(var(--border) 1px, transparent 1px);
+      background-size: 24px 24px;
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 230, 118, 0.07) 0%, transparent 70%);
+      top: -200px;
+      right: -200px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container-main {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Typography */
+    h1, h2, h3 { margin: 0; font-weight: 700; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Navigation Sidebar (Desktop) / Bottom Bar (Mobile) */
+    .nav-container {
+      background: rgba(20, 22, 30, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      gap: 4px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 10px 16px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .nav-btn:hover { background: var(--bg-input); color: var(--text-main); }
+    .nav-btn.active {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+    }
+    .card:hover { border-color: rgba(255,255,255,0.1); }
+
+    /* Inputs */
+    .input-group { margin-bottom: 16px; }
+    .label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-dim);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px var(--accent-dim); }
+    
+    .btn-secondary {
+      background: var(--bg-input);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--border); }
+
+    /* Result Box */
+    .result-box {
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 16px;
+      text-align: center;
+    }
+    .result-win { background: var(--accent-dim); border: 1px solid var(--accent); color: var(--accent); }
+    .result-lose { background: var(--danger-dim); border: 1px solid var(--danger); color: var(--danger); }
+    .result-draw { background: rgba(255, 183, 77, 0.1); border: 1px solid var(--warning); color: var(--warning); }
+
+    /* Script List */
+    .script-item {
+      background: var(--bg-input);
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .script-item:hover {
+      border-color: var(--border);
+      transform: translateX(4px);
+      background: #1F222D;
+    }
+    .script-item:active { transform: scale(0.99); }
+    
+    .script-badge {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 8px;
+    }
+    .bg-green { background: var(--accent-dim); color: var(--accent); }
+    .bg-red { background: var(--danger-dim); color: var(--danger); }
+    .bg-blue { background: rgba(41, 121, 255, 0.15); color: var(--info); }
+    .bg-yellow { background: rgba(255, 183, 77, 0.15); color: var(--warning); }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--accent);
+      color: #000;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 700;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* Helper Grid */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* Section hiding */
+    .section { display: none; animation: fadeIn 0.4s ease; }
+    .section.active { display: block; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <div class="container-main">
+    <!-- Header -->
+    <header style="margin-bottom: 24px; text-align: center;">
+      <h1 style="font-size: 24px; letter-spacing: -0.5px;">CS Sportsbook <span style="color: var(--accent);">Toolkit</span></h1>
+      <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">Alat bantu lengkap untuk Customer Service Bola</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+      <button class="nav-btn active" onclick="switchTab('calc-single')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Kalkulator
+      </button>
+      <button class="nav-btn" onclick="switchTab('hdp-sim')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Simulator HDP
+      </button>
+      <button class="nav-btn" onclick="switchTab('scripts')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Script Jawaban
+      </button>
+      <button class="nav-btn" onclick="switchTab('knowledge')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        Istilah
+      </button>
+    </nav>
+
+    <!-- CONTENT AREA -->
+
+    <!-- 1. KALKULATOR TAB -->
+    <div id="calc-single" class="section active">
+      <div class="card">
+        <h2 style="font-size: 18px; margin-bottom: 20px;">Kalkulator Single & Parlay</h2>
+        
+        <div class="grid-2">
+          <div class="input-group">
+            <label class="label">Modal Taruhan (Rp)</label>
+            <input type="number" id="input-stake" placeholder="Contoh: 100000" value="100000">
+          </div>
+          <div class="input-group">
+            <label class="label">Tipe Taruhan</label>
+            <select id="bet-type" onchange="toggleParlayInput()">
+              <option value="single">Single</option>
+              <option value="parlay">Mix Parlay</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Single Bet Inputs -->
+        <div id="single-inputs">
+          <div class="grid-2">
+            <div class="input-group">
+              <label class="label">Odds</label>
+              <input type="number" id="input-odds" placeholder="Contoh: 1.50" value="1.50" step="0.01">
+            </div>
+            <div class="input-group">
+              <label class="label">Jenis Odds</label>
+              <select id="odds-type">
+                <option value="positive">Positif (HK/EU) - Contoh: 1.50</option>
+                <option value="negative">Minus (Indo) - Contoh: -1.25</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parlay Inputs -->
+        <div id="parlay-inputs" style="display: none;">
+          <div class="input-group">
+            <label class="label">Odds Parlay (Pisahkan dengan koma)</label>
+            <input type="text" id="input-parlay-odds" placeholder="Contoh: 1.50, 1.80, 2.10">
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 16px;">Masukkan semua odds tim yang dipasang.</p>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%;" onclick="calculateBet()">Hitung Sekarang</button>
+
+        <div id="result-area" style="margin-top: 20px; display: none;">
+          <div class="grid-2">
+            <div class="result-box result-win">
+              <div style="font-size: 12px; opacity: 0.8;">Jika MENANG</div>
+              <div id="res-win" class="mono" style="font-size: 20px; font-weight: 600; margin-top: 4px;">Rp 0</div>
+            </div>
+            <div class="result-box result-lose">
+              <div style="font-size: 12px; opacity: 0.8;">Jika KALAH</div>
+              <div id="res-lose" class="mono" style="font-size: 20px; font-weight: 600; margin-top: 4px;">Rp 0</div>
+            </div>
+          </div>
+          <div style="background: var(--bg-input); padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 13px; color: var(--text-muted);" id="res-desc"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. SIMULATOR HDP TAB -->
+    <div id="hdp-sim" class="section">
+      <div class="card">
+        <h2 style="font-size: 18px; margin-bottom: 20px;">Simulator Handicap (HDP)</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Gunakan ini untuk cek apakah taruhan member Menang/Kalah/Draw berdasarkan skor.</p>
+        
+        <div class="grid-2">
+          <div class="input-group">
+            <label class="label">Skor Tim Favorit</label>
+            <input type="number" id="hdp-score-fav" value="1" min="0">
+          </div>
+          <div class="input-group">
+            <label class="label">Skor Tim Underdog</label>
+            <input type="number" id="hdp-score-und" value="1" min="0">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="input-group">
+            <label class="label">Nilai Voor (HDP)</label>
+            <select id="hdp-value">
+              <option value="0">0 (Seri)</option>
+              <option value="0.25">0.25</option>
+              <option value="0.5" selected>0.5</option>
+              <option value="0.75">0.75</option>
+              <option value="1">1</option>
+              <option value="1.25">1.25</option>
+              <option value="1.5">1.5</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="label">Pilihan Member</label>
+            <select id="hdp-choice">
+              <option value="fav">Tim Favorit (Memberi Voor)</option>
+              <option value="und">Tim Underdog (Menerima Voor)</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%;" onclick="simulateHDP()">Cek Hasil</button>
+
+        <div id="hdp-result-area" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+
+    <!-- 3. SCRIPT JAWABAN TAB -->
+    <div id="scripts" class="section">
+      <div class="card">
+        <h2 style="font-size: 18px; margin-bottom: 20px;">Template Script Jawaban</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Klik script untuk menyalin otomatis.</p>
+        
+        <div id="scripts-list">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. ISTILAH TAB -->
+    <div id="knowledge" class="section">
+      <div class="card">
+        <h2 style="font-size: 18px; margin-bottom: 20px;">Kamus Istilah Sportsbook</h2>
+        <div id="terms-list">
+          <!-- Generated by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast">Berhasil Disalin!</div>
+
+  <script>
+    // DATA
+    const scriptsData = [
+      { cat: 'info', title: 'Pertanyaan: Apa itu Over/Under?', txt: 'Kak, Over/Under itu tebak jumlah total gol.\n* OVER (O): Total gol LEBIH dari angka patokan.\n* UNDER (U): Total gol KURANG dari angka patokan.\nContoh: O 2.5 berarti minimal harus ada 3 gol dalam pertandingan.' },
+      { cat: 'info', title: 'Pertanyaan: Apa itu Handicap/HDP?', txt: 'Kak, Handicap itu sistem voor (pemberian bola maya).\nTim Favorit (di atas): Memberi voor.\nTim Underdog (di bawah): Menerima voor.\nTujuannya untuk menyamakan kekuatan kedua tim agar odds seimbang.' },
+      { cat: 'win', title: 'Skenario: Member Menang', txt: 'Selamat Kak! Untuk taruhan di match tadi, statusnya sudah **WIN (Menang)**.\nSaldo kemenangan sudah masuk otomatis ke saldo utama. Terima kasih Kak.' },
+      { cat: 'lose', title: 'Skenario: Member Kalah', txt: 'Mohon maaf Kak, untuk taruhan tadi hasilnya **LOSE (Kalah)**.\nPrediksi tidak sesuai dengan hasil pertandingan. Semoga beruntung di match selanjutnya ya Kak.' },
+      { cat: 'draw', title: 'Skenario: Draw (Uang Kembali)', txt: 'Kak, untuk taruhan tadi hasilnya **DRAW**.\nKarena hasil skor pas di batas voor, modal Kakak dikembalikan secara utuh (tanpa potongan dan tanpa untung).' },
+      { cat: 'win', title: 'Skenario: Half Win (Menang Setengah)', txt: 'Kak, taruhan tadi statusnya **HALF WIN (Menang Setengah)**.\nIni terjadi karena hasil skor tepat di batas tertentu (biasanya HDP 0.75).\nKakak mendapatkan setengah dari kemenangan, sisanya dianggap draw.' },
+      { cat: 'lose', title: 'Skenario: Half Lose (Kalah Setengah)', txt: 'Kak, taruhan tadi statusnya **HALF LOSE (Kalah Setengah)**.\nIni terjadi karena hasil skor tepat di batas tertentu (biasanya HDP 0.75).\nSetengah modal hangus, setengahnya lagi dikembalikan ke saldo.' },
+      { cat: 'tech', title: 'Komplain: Odds Berubah Saat Running', txt: 'Kak, untuk taruhan Running (Bola Jalan), odds bergerak secara *real-time* mengikuti jalannya pertandingan.\nKalau odds berubah sebelum confirm, berarti sistem sudah update kondisi terbaru. Jadi kita harus cepat pasang ya Kak.' },
+      { cat: 'tech', title: 'Komplain: Kenapa Bet Saya Reject?', txt: 'Mohon maaf Kak, biasanya taruhan rejected karena:\n1. Odds sudah berubah saat match running.\n2. Market sedang ditutup sementara (suspend).\n3. Limit taruhan sudah penuh.\nSilakan dicoba pasang ulang ya Kak.' },
+      { cat: 'tech', title: 'Komplain: Parlay Kalah 1 Saja', txt: 'Benar Kak, untuk Mix Parlay syarat menangnya adalah **SEMUA TIM HARUS MENANG**.\nKalau ada 1 tim saja yang kalah/draw, maka seluruh taruhan parlay dinyatakan kalah (Lost).' },
+      { cat: 'info', title: 'Pertanyaan: SBO vs SABA', txt: 'Kak perbedaannya:\n* **SBO:** Odds sering minus (indo), potongan kalah bisa lebih besar, tapi max win tinggi.\n* **SABA:** Odds positif desimal, perhitungan lebih simple, cocok pemula.\nTerserah Kakak mau pakai yang mana, saldo bisa dipakai di semua provider.' },
+      { cat: 'cs', title: 'Jawaban: Cek Dulu ke Sistem', txt: 'Baik Kak, mohon tunggu sebentar. Saya cekkan dulu history taruhan dan detail pertandingannya di sistem untuk memastikan hasilnya benar.' }
+    ];
+
+    const termsData = [
+      { t: 'FT (Full Time)', d: 'Pertandingan penuh 2x45 menit. Taruhan berlaku untuk 90 menit + injury time.' },
+      { t: '1H / HT (Half Time)', d: 'Taruhan hanya berlaku untuk babak pertama (45 menit pertama).' },
+      { t: 'Live / Running', d: 'Taruhan saat pertandingan sedang berlangsung.' },
+      { t: 'Odds', d: 'Nilai kei atau bayaran. Menentukan berapa uang yang didapat jika menang.' },
+      { t: 'Odds Positif', d: 'Nilai kei plus (contoh 1.50). Kalau menang: Modal x Odds. Kalau kalah: Modal hangus.' },
+      { t: 'Odds Negatif / Minus', d: 'Nilai kei minus (contoh -1.25). Kalau menang: Dapat modal. Kalau kalah: Modal x Odds (potongan lebih besar).' },
+      { t: 'HDP 0', d: 'Level bola. Tidak ada voor. Kalau seri = Draw. Menang 1 gol = Win.' },
+      { t: 'HDP 0.25', d: 'Voor seperempat. Kalau seri: Favo kalah setengah, Underdog menang setengah.' },
+      { t: 'HDP 0.5', d: 'Voor setengah bola. Kalau seri: Underdog menang full.' },
+      { t: 'HDP 0.75', d: 'Voor tiga perempat. Favo menang 1 gol: Menang setengah. Favo seri: Kalah full.' },
+      { t: 'HDP 1', d: 'Voor 1 bola. Favo menang 1 gol = Draw. Favo menang 2 gol = Win.' },
+      { t: 'OU (Over/Under)', d: 'Tebak jumlah gol. O 2.5 berarti minimal 3 gol. U 2.5 berarti maksimal 2 gol.' },
+      { t: 'OE (Odd/Even)', d: 'Tebak jumlah gol Ganjil atau Genap.' },
+      { t: 'Mix Parlay', d: 'Taruhan paket, minimal 3 tim dalam 1 tiket. Semua harus menang.' },
+      { t: 'Correct Score', d: 'Tebak skor akhir pasti (contoh: 2-1). Odds besar tapi sulit.' }
+    ];
+
+    // INIT
+    document.addEventListener('DOMContentLoaded', () => {
+      renderScripts();
+      renderTerms();
+    });
+
+    // FUNCTIONS
+    function switchTab(id) {
+      document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(id).classList.add('active');
+      
+      // Find button with matching onclick or simple logic based on index if needed, 
+      // but simple manual map is safer here for readability
+      const btns = document.querySelectorAll('.nav-btn');
+      if(id === 'calc-single') btns[0].classList.add('active');
+      if(id === 'hdp-sim') btns[1].classList.add('active');
+      if(id === 'scripts') btns[2].classList.add('active');
+      if(id === 'knowledge') btns[3].classList.add('active');
+    }
+
+    function toggleParlayInput() {
+      const type = document.getElementById('bet-type').value;
+      document.getElementById('single-inputs').style.display = type === 'single' ? 'block' : 'none';
+      document.getElementById('parlay-inputs').style.display = type === 'parlay' ? 'block' : 'none';
+    }
+
+    function calculateBet() {
+      const stake = parseFloat(document.getElementById('input-stake').value) || 0;
+      const type = document.getElementById('bet-type').value;
+      const resultArea = document.getElementById('result-area');
+      const winEl = document.getElementById('res-win');
+      const loseEl = document.getElementById('res-lose');
+      const descEl = document.getElementById('res-desc');
+
+      if(stake <= 0) {
+        showToast('Masukkan modal yang valid');
+        return;
+      }
+
+      let winAmount = 0;
+      let loseAmount = 0;
+      let desc = '';
+
+      if(type === 'single') {
+        const odds = parseFloat(document.getElementById('input-odds').value) || 0;
+        const oddsType = document.getElementById('odds-type').value;
+        
+        if(odds <= 0) { showToast('Masukkan odds valid'); return; }
+
+        if(oddsType === 'positive') {
+          winAmount = stake * odds;
+          loseAmount = stake;
+          desc = `Odds Positif ${odds}. Menang: Modal ${formatRp(stake)} x Odds. Kalah: Modal hangus.`;
+        } else {
+          // Indo odds minus: -1.25 means if you bet 100 and win, you get 100. If you lose, you pay 100 * 1.25
+          const absOdds = Math.abs(odds);
+          winAmount = stake; 
+          loseAmount = stake * absOdds;
+          desc = `Odds Minus ${odds}. Menang: Dapat modal penuh. Kalah: Potong modal x ${absOdds}.`;
+        }
+      } else {
+        // Parlay Logic
+        const oddsStr = document.getElementById('input-parlay-odds').value;
+        if(!oddsStr) { showToast('Masukkan odds parlay'); return; }
+        
+        const oddsArr = oddsStr.split(',').map(o => parseFloat(o.trim())).filter(o => !isNaN(o) && o > 0);
+        if(oddsArr.length < 2) { showToast('Parlay minimal 2 odds'); return; }
+
+        const totalOdds = oddsArr.reduce((acc, curr) => acc * curr, 1);
+        winAmount = stake * totalOdds;
+        loseAmount = stake;
+        desc = `Parlay ${oddsArr.length} tim. Total Odds: ${totalOdds.toFixed(2)}. Kalah 1 saja = Lose All.`;
+      }
+
+      winEl.innerText = formatRp(winAmount);
+      loseEl.innerText = formatRp(loseAmount);
+      descEl.innerText = desc;
+      resultArea.style.display = 'block';
+    }
+
+    function simulateHDP() {
+      const scoreFav = parseInt(document.getElementById('hdp-score-fav').value) || 0;
+      const scoreUnd = parseInt(document.getElementById('hdp-score-und').value) || 0;
+      const hdpVal = parseFloat(document.getElementById('hdp-value').value);
+      const choice = document.getElementById('hdp-choice').value;
+      
+      // Actual Goal Difference (Fav perspective)
+      // If Fav wins 2-0, goalDiff is 2.
+      // If Fav loses 0-1, goalDiff is -1.
+      const goalDiff = scoreFav - scoreUnd;
+
+      // Adjusted Score with HDP
+      // If Member picks Fav (give voor), result = GoalDiff - HDP
+      // If Member picks Und (receive voor), result = GoalDiff + HDP (or UndScore - FavScore + HDP -> -GoalDiff + HDP)
+      
+      let adjustedRes = 0;
+      if(choice === 'fav') {
+        adjustedRes = goalDiff - hdpVal;
+      } else {
+        // Underdog perspective: (Und Score + HDP) - Fav Score
+        // Or simply reverse the fav handicap logic
+        adjustedRes = (scoreUnd + hdpVal) - scoreFav;
+      }
+
+      let html = '';
+      const scoreText = `Skor: ${scoreFav} - ${scoreUnd}. HDP: ${hdpVal} (${choice === 'fav' ? 'Favorit' : 'Underdog'}).`;
+
+      if(adjustedRes > 0) {
+        html = `<div class="result-box result-win"><div style="font-size:20px; font-weight:700;">MENANG</div><p style="font-size:12px; margin-top:8px; opacity:0.8">${scoreText}</p></div>`;
+      } else if(adjustedRes < 0) {
+        html = `<div class="result-box result-lose"><div style="font-size:20px; font-weight:700;">KALAH</div><p style="font-size:12px; margin-top:8px; opacity:0.8">${scoreText}</p></div>`;
+      } else {
+        html = `<div class="result-box result-draw"><div style="font-size:20px; font-weight:700;">DRAW</div><p style="font-size:12px; margin-top:8px; opacity:0.8">${scoreText}<br>Modal dikembalikan.</p></div>`;
+      }
+
+      document.getElementById('hdp-result-area').innerHTML = html;
+    }
+
+    function renderScripts() {
+      const container = document.getElementById('scripts-list');
+      let html = '';
+      
+      scriptsData.forEach(s => {
+        const colorMap = {
+          'info': 'bg-blue',
+          'win': 'bg-green',
+          'lose': 'bg-red',
+          'tech': 'bg-yellow',
+          'cs': 'bg-green'
+        };
+        
+        html += `
+          <div class="script-item" onclick="copyText('${s.txt.replace(/'/g, "\\'").replace(/\n/g, "\\n")}')">
+            <div style="display:flex; align-items:center; margin-bottom:6px;">
+              <span class="script-badge ${colorMap[s.cat]}">${s.cat.toUpperCase()}</span>
+              <span style="font-weight:600; font-size:14px;">${s.title}</span>
+            </div>
+            <div style="font-size:13px; color:var(--text-muted); white-space:pre-wrap; line-height:1.5;">${s.txt}</div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderTerms() {
+      const container = document.getElementById('terms-list');
+      let html = '';
+      termsData.forEach(t => {
+        html += `
+          <div style="display:flex; flex-direction:column; padding:12px; background:var(--bg-input); border-radius:8px; margin-bottom:8px;">
+            <span style="color:var(--accent); font-weight:600; margin-bottom:4px;">${t.t}</span>
+            <span style="font-size:13px; color:var(--text-muted); line-height:1.5;">${t.d}</span>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast('Script berhasil disalin!');
+      }).catch(err => {
+        // Fallback for older browsers/contexts
+        const textarea = document.createElement('textarea');
+        textarea.value = txt;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('Script berhasil disalin!');
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function formatRp(num) {
+      return 'Rp ' + Math.round(num).toLocaleString('id-ID');
+    }
+  </script>
+</body>
+</html>
